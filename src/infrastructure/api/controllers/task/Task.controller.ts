@@ -1,16 +1,14 @@
 import { Request, Response } from 'express';
-import { Task } from '../../../domain/entities/Task';
+import { Task } from '../../../../domain/entities/Task';
 import { 
   CreateTaskDto, 
   UpdateTaskDto, 
   TaskResponseDto, 
   ApiResponseDto, 
   ErrorResponseDto,
-  CreateTaskSchema,
   UpdateTaskSchema,
   TaskIdSchema
-} from './dto/task.dto';
-import { get } from 'http';
+} from './task.dto';
 import { createTaskCodec, getTaskCodec } from './task.codec';
 
 export class TaskController {
@@ -29,6 +27,11 @@ export class TaskController {
     };
   }
 
+  /**
+   * 
+   * @param req Get tasks list
+   * @param res Tasks list response
+   */
   async getTasks(req: Request, res: Response): Promise<void> {
     try {
       const taskDtos = this.tasks.map(task => this.taskToDto(task));

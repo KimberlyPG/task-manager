@@ -19,7 +19,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.use('/api/tasks', taskRoutes);
+app.use('/tasks', taskRoutes);
 
 const server = app.listen(config.port, () => {
   console.log(`Listening at http://localhost:${config.port}`);
