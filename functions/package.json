@@ -1,11 +1,23 @@
 {
-  "name": "task-manager-api",
+  "name": "functions",
   "version": "1.0.0",
   "description": "## Quick start",
-  "main": "index.js",
+  "main": "lib/index.js",
   "scripts": {
     "dev": "nodemon",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --ext .js,.ts src",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "npm run build && firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "format": "prettier --write \"src/**/*.{ts,js,json}\""
+  },
+  "engines": {
+    "node": "22"
   },
   "type": "commonjs",
   "keywords": [],
@@ -15,6 +27,8 @@
     "body-parser": "^2.2.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "firebase-admin": "^12.6.0",
+    "firebase-functions": "^6.0.1",
     "winston": "^3.17.0",
     "zod": "^3.25.67"
   },
@@ -23,8 +37,15 @@
     "@types/express": "^5.0.3",
     "@types/node": "^24.0.3",
     "@types/winston": "^2.4.4",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.57.1",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.1.0",
     "nodemon": "^3.1.10",
+    "prettier": "^3.5.3",
     "ts-node": "^10.9.2",
-    "typescript": "^5.8.3"
+    "typescript": "^5.1.6"
   }
 }

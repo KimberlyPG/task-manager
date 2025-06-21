@@ -1,6 +1,6 @@
-import { env } from 'node:process';
+import {env} from "node:process";
 
 export default {
-  env: env['NODE_ENV'],
-  port: env['PORT'],
+  env: env["NODE_ENV"],
+  port: env["APP_PORT"],
 };

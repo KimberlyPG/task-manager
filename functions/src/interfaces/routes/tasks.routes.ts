@@ -1,5 +1,6 @@
-import { Router } from 'express';
-import { TaskController } from '../../infrastructure/api/controllers/task/Task.controller';
+import {Router} from "express";
+import {TaskController} from
+  "../../infrastructure/api/controllers/task/Task.controller";
 
 const router = Router();
 const taskController = new TaskController();
@@ -9,7 +10,7 @@ const taskController = new TaskController();
  * @description Get all tasks for the current user
  * @returns {TaskResponseDto[]} 200 - List of tasks
  */
-router.get('/', taskController.getTasks.bind(taskController));
+router.get("/", taskController.getTasks.bind(taskController));
 
 /**
  * @route POST /tasks
@@ -17,7 +18,7 @@ router.get('/', taskController.getTasks.bind(taskController));
  * @body { title: string, description: string }
  * @returns {TaskResponseDto} 201 - Task created
  */
-router.post('/', taskController.createTask.bind(taskController));
+router.post("/", taskController.createTask.bind(taskController));
 
 /**
  * @route PUT /tasks/:id
@@ -26,7 +27,7 @@ router.post('/', taskController.createTask.bind(taskController));
  * @body { title?: string, description?: string, completed?: boolean }
  * @returns {TaskResponseDto} 200 - Task updated
  */
-router.put('/:id', taskController.updateTask.bind(taskController));
+router.put("/:id", taskController.updateTask.bind(taskController));
 
 /**
  * @route DELETE /tasks/:id
@@ -34,6 +35,6 @@ router.put('/:id', taskController.updateTask.bind(taskController));
  * @param {string} id.path.required - task ID
  * @returns {TaskResponseDto} 200 - Task deleted
  */
-router.delete('/:id', taskController.deleteTask.bind(taskController));
+router.delete("/:id", taskController.deleteTask.bind(taskController));
 
 export default router;

@@ -1,21 +1,23 @@
-import { Request, Response } from 'express';
-import { Task } from '../../../../domain/entities/Task';
-import { 
-  CreateTaskDto, 
-  UpdateTaskDto, 
-  TaskResponseDto, 
-  ApiResponseDto, 
+import {Request, Response} from "express";
+import {Task} from "../../../../domain/entities/Task";
+import {
+  CreateTaskDto,
+  UpdateTaskDto,
+  TaskResponseDto,
+  ApiResponseDto,
   ErrorResponseDto,
   UpdateTaskSchema,
-  TaskIdSchema
-} from './task.dto';
-import { createTaskCodec, getTaskCodec } from './task.codec';
+  TaskIdSchema,
+} from "./task.dto";
+import {createTaskCodec, getTaskCodec} from "./task.codec";
 
 export class TaskController {
   private tasks: Task[] = [];
-  private nextId: number = 1;
+  private nextId = 1;
 
-  constructor() {}
+  constructor() {
+    console.log("TaskController constructor");
+  }
 
   private taskToDto(task: Task): TaskResponseDto {
     return {
@@ -23,31 +25,31 @@ export class TaskController {
       title: task.title,
       description: task.description,
       completed: task.completed,
-      createdAt: task.createdAt.toISOString()
+      createdAt: task.createdAt.toISOString(),
     };
   }
 
   /**
-   * 
+   *
    * @param req Get tasks list
    * @param res Tasks list response
    */
   async getTasks(req: Request, res: Response): Promise<void> {
     try {
-      const taskDtos = this.tasks.map(task => this.taskToDto(task));
-      
+      const taskDtos = this.tasks.map((task) => this.taskToDto(task));
+
       const response: ApiResponseDto<TaskResponseDto[]> = {
         success: true,
         data: taskDtos,
-        count: taskDtos.length
+        count: taskDtos.length,
       };
 
       res.status(200).json(response);
     } catch (error) {
       const errorResponse: ErrorResponseDto = {
         success: false,
-        message: 'Error fetching tasks',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        message: "Error fetching tasks",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
 
       res.status(500).json(errorResponse);
@@ -57,12 +59,13 @@ export class TaskController {
   async createTask(req: Request, res: Response): Promise<void> {
     try {
       const validationResult = createTaskCodec.decodeCreateTask(req.body);
-      
+
       if (!validationResult.success) {
         const errorResponse: ErrorResponseDto = {
           success: false,
-          message: 'Invalid input data',
-          error: validationResult.error.errors.map(err => err.message).join(', ')
+          message: "Invalid input data",
+          error: validationResult.error.errors.map((err) => err.message)
+            .join(", "),
         };
 
         res.status(400).json(errorResponse);
@@ -75,8 +78,8 @@ export class TaskController {
         id: this.nextId++,
         title: createTaskDto.title,
         description: createTaskDto.description,
-        completed: false, 
-        createdAt: new Date()
+        completed: false,
+        createdAt: new Date(),
       };
 
       this.tasks.push(newTask);
@@ -84,15 +87,15 @@ export class TaskController {
       const response: ApiResponseDto<TaskResponseDto> = {
         success: true,
         data: this.taskToDto(newTask),
-        message: 'Task created successfully'
+        message: "Task created successfully",
       };
 
       res.status(201).json(response);
     } catch (error) {
       const errorResponse: ErrorResponseDto = {
         success: false,
-        message: 'Error creating task',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        message: "Error creating task",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
 
       res.status(500).json(errorResponse);
@@ -101,14 +104,14 @@ export class TaskController {
 
   async updateTask(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const {id} = req.params;
 
       const idValidationResult = TaskIdSchema.safeParse(id);
-      
+
       if (!idValidationResult.success) {
         const errorResponse: ErrorResponseDto = {
           success: false,
-          message: 'Task ID is required and must be a valid number'
+          message: "Task ID is required and must be a valid number",
         };
 
         res.status(400).json(errorResponse);
@@ -116,12 +119,13 @@ export class TaskController {
       }
 
       const bodyValidationResult = UpdateTaskSchema.safeParse(req.body);
-      
+
       if (!bodyValidationResult.success) {
         const errorResponse: ErrorResponseDto = {
           success: false,
-          message: 'Invalid input data',
-          error: bodyValidationResult.error.errors.map(err => err.message).join(', ')
+          message: "Invalid input data",
+          error: bodyValidationResult.error.errors.map((err) => err.message)
+            .join(", "),
         };
 
         res.status(400).json(errorResponse);
@@ -130,12 +134,13 @@ export class TaskController {
 
       const updateTaskDto: UpdateTaskDto = bodyValidationResult.data;
 
-      const taskIndex = this.tasks.findIndex(task => task.id === parseInt(id));
-      
+      const taskIndex = this.tasks
+        .findIndex((task) => task.id === parseInt(id));
+
       if (taskIndex === -1) {
         const errorResponse: ErrorResponseDto = {
           success: false,
-          message: 'Task not found'
+          message: "Task not found",
         };
 
         res.status(404).json(errorResponse);
@@ -146,10 +151,16 @@ export class TaskController {
 
       const updatedTask: Task = {
         ...existingTask,
-        title: updateTaskDto.title !== undefined ? updateTaskDto.title : existingTask.title,
-        description: updateTaskDto.description !== undefined ? updateTaskDto.description : existingTask.description,
-        completed: updateTaskDto.completed !== undefined ? updateTaskDto.completed : existingTask.completed,
-        updatedAt: new Date()
+        title: updateTaskDto.title !== undefined ?
+          updateTaskDto.title : existingTask.title,
+        description:
+          updateTaskDto.description !== undefined ?
+            updateTaskDto.description :
+            existingTask.description,
+        completed:
+          updateTaskDto.completed !== undefined ?
+            updateTaskDto.completed : existingTask.completed,
+        updatedAt: new Date(),
       };
 
       this.tasks[taskIndex] = updatedTask;
@@ -157,15 +168,15 @@ export class TaskController {
       const response: ApiResponseDto<TaskResponseDto> = {
         success: true,
         data: this.taskToDto(updatedTask),
-        message: 'Task updated successfully'
+        message: "Task updated successfully",
       };
 
       res.status(200).json(response);
     } catch (error) {
       const errorResponse: ErrorResponseDto = {
         success: false,
-        message: 'Error updating task',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        message: "Error updating task",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
 
       res.status(500).json(errorResponse);
@@ -174,26 +185,27 @@ export class TaskController {
 
   async deleteTask(req: Request, res: Response): Promise<void> {
     try {
-      const { id } = req.params;
+      const {id} = req.params;
 
       const taskIdValidation = getTaskCodec.decodeTaskId(id);
-      
+
       if (!taskIdValidation.success) {
         const errorResponse: ErrorResponseDto = {
           success: false,
-          message: 'Task ID is required and must be a valid number'
+          message: "Task ID is required and must be a valid number",
         };
 
         res.status(400).json(errorResponse);
         return;
       }
 
-      const taskIndex = this.tasks.findIndex(task => task.id === parseInt(id));
-      
+      const taskIndex = this.tasks
+        .findIndex((task) => task.id === parseInt(id));
+
       if (taskIndex === -1) {
         const errorResponse: ErrorResponseDto = {
           success: false,
-          message: 'Task not found'
+          message: "Task not found",
         };
 
         res.status(404).json(errorResponse);
@@ -207,15 +219,15 @@ export class TaskController {
       const response: ApiResponseDto<TaskResponseDto> = {
         success: true,
         data: this.taskToDto(deletedTask),
-        message: `Task "${deletedTask.title}" deleted successfully`
+        message: `Task "${deletedTask.title}" deleted successfully`,
       };
 
       res.status(200).json(response);
     } catch (error) {
       const errorResponse: ErrorResponseDto = {
         success: false,
-        message: 'Error deleting task',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        message: "Error deleting task",
+        error: error instanceof Error ? error.message : "Unknown error",
       };
 
       res.status(500).json(errorResponse);

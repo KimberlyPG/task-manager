@@ -1,9 +1,9 @@
-import { TaskIdSchema, CreateTaskSchema } from './task.dto';
+import {TaskIdSchema, CreateTaskSchema} from "./task.dto";
 
 export const getTaskCodec = {
-    decodeTaskId: (params: unknown) => TaskIdSchema.safeParse(params),
-}
+  decodeTaskId: (params: unknown) => TaskIdSchema.safeParse(params),
+};
 
 export const createTaskCodec = {
-    decodeCreateTask: (body: unknown) => CreateTaskSchema.safeParse(body),
-}
+  decodeCreateTask: (body: unknown) => CreateTaskSchema.safeParse(body),
+};

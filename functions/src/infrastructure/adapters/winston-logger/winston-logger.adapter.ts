@@ -1,9 +1,9 @@
-import { createLogger, format, transports, Logger } from 'winston';
-import ILogger from '../../../core/ports/logger.port';
+import {createLogger, format, transports, Logger} from "winston";
+import ILogger from "../../../core/ports/logger.port";
 
-const { combine, timestamp, printf, colorize, errors } = format;
+const {combine, timestamp, printf, colorize, errors} = format;
 
-const customFormat = printf(({ level, message, timestamp, stack }) => {
+const customFormat = printf(({level, message, timestamp, stack}) => {
   return `[${timestamp}] ${level}: ${stack || message}`;
 });
 
@@ -12,12 +12,12 @@ export class WinstonLogger implements ILogger {
 
   constructor() {
     this.logger = createLogger({
-      level: 'info',
+      level: "info",
       format: combine(
         colorize(),
-        timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        errors({ stack: true }),
-        customFormat,
+        timestamp({format: "YYYY-MM-DD HH:mm:ss"}),
+        errors({stack: true}),
+        customFormat
       ),
       transports: [new transports.Console()],
       exceptionHandlers: [new transports.Console()],

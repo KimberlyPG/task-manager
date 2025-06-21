@@ -1,5 +1,5 @@
-import { env } from 'node:process';
+import {env} from "node:process";
 
 export default {
-    logLevel: env['LOG_LEVEL'],
-}
+  logLevel: env["LOG_LEVEL"],
+};
