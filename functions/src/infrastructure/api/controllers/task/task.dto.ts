@@ -3,7 +3,7 @@ import { z } from "zod";
 // DTOs for Task API
 // Zod schema for task response
 export const TaskResponseSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   title: z.string(),
   description: z.string(),
   completed: z.boolean(),
@@ -44,7 +44,7 @@ export const UpdateTaskSchema = z
     message: "At least one field must be provided to update (title, description, completed)",
   });
 
-export const TaskIdSchema = z.string().uuid();
+export const TaskIdSchema = z.string().min(1, "Task ID must be a non-empty string");
 
 export type CreateTaskDto = z.infer<typeof CreateTaskSchema>;
 export type UpdateTaskDto = z.infer<typeof UpdateTaskSchema>;

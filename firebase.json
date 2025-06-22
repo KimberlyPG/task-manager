@@ -20,5 +20,15 @@
     "location": "nam5",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
-  }
-}
+  },
+  "emulators": {
+    "firestore": {
+      "host": "localhost",
+      "port": 8085
+    },
+    "ui": {
+      "enabled": true,
+      "host": "localhost",
+      "port": 4001
+    }
+}}

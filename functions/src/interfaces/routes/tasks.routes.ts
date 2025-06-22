@@ -1,39 +1,35 @@
 import { Router } from "express";
-import { TaskController } from "../../infrastructure/api/controllers/task/Task.controller";
+import { TaskController } from "../../infrastructure/api/controllers/task/task.controller";
+import { TaskFirestoreRepository } from "../../infrastructure/repositories/task-firestore.repository";
+import {
+  CreateTaskUseCase,
+  GetTasksUseCase,
+  UpdateTaskUseCase,
+  DeleteTaskUseCase,
+  GetTaskByIdUseCase,
+} from "../../core/use-cases";
 
 const router = Router();
-const taskController = new TaskController();
 
-/**
- * @route GET /tasks
- * @description Get all tasks for the current user
- * @returns {TaskResponseDto[]} 200 - List of tasks
- */
-router.get("/", taskController.getTasks.bind(taskController));
+const taskRepo = new TaskFirestoreRepository();
+const createTaskUseCase = new CreateTaskUseCase(taskRepo);
+const getTasksUseCase = new GetTasksUseCase(taskRepo);
+const updateTaskUseCase = new UpdateTaskUseCase(taskRepo);
+const deleteTaskUseCase = new DeleteTaskUseCase(taskRepo);
+const getTaskByIdUseCase = new GetTaskByIdUseCase(taskRepo);
 
-/**
- * @route POST /tasks
- * @description Create a new task
- * @body { title: string, description: string }
- * @returns {TaskResponseDto} 201 - Task created
- */
-router.post("/", taskController.createTask.bind(taskController));
+const taskController = new TaskController(
+  createTaskUseCase,
+  getTasksUseCase,
+  updateTaskUseCase,
+  deleteTaskUseCase,
+  getTaskByIdUseCase
+);
 
-/**
- * @route PUT /tasks/:id
- * @description Update an existing task by ID
- * @param {string} id.path.required - task ID
- * @body { title?: string, description?: string, completed?: boolean }
- * @returns {TaskResponseDto} 200 - Task updated
- */
-router.put("/:id", taskController.updateTask.bind(taskController));
-
-/**
- * @route DELETE /tasks/:id
- * @description Delete a task by ID
- * @param {string} id.path.required - task ID
- * @returns {TaskResponseDto} 200 - Task deleted
- */
-router.delete("/:id", taskController.deleteTask.bind(taskController));
+router.get("/", (req, res) => taskController.getTasks(req, res));
+router.post("/", (req, res) => taskController.createTask(req, res));
+router.put("/:id", (req, res) => taskController.updateTask(req, res));
+router.delete("/:id", (req, res) => taskController.deleteTask(req, res));
+router.get("/:id", (req, res) => taskController.getTaskById(req, res));
 
 export default router;

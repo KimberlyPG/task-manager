@@ -1,13 +1,27 @@
-import { firestore } from "../adapters/firebase/firebase.admin";
+import { db } from "../adapters/firebase/firebase.admin";
 import { Task } from "../../domain/entities/Task";
 import { TaskRepository } from "../../domain/repositories/TaskRepository";
 
 export class TaskFirestoreRepository implements TaskRepository {
-  private collection = firestore.collection("tasks");
+  private collection = db.collection("tasks");
 
   async getAll(): Promise<Task[]> {
     const snapshot = await this.collection.get();
-    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }) as Task);
+
+    const tasks: Task[] = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        title: data.title,
+        description: data.description,
+        completed: data.completed,
+        createdAt: data.createdAt?.toDate
+          ? new Date(data.createdAt.toDate())
+          : new Date(data.createdAt),
+      };
+    });
+
+    return tasks;
   }
 
   async getById(id: string): Promise<Task | null> {
@@ -28,14 +42,30 @@ export class TaskFirestoreRepository implements TaskRepository {
     return { id: docRef.id, ...task };
   }
 
-  async update(id: string, task: Partial<Task>): Promise<void> {
+  async update(id: string, task: Partial<Task>): Promise<Task | null> {
     await this.collection.doc(id).update({
       ...task,
       updatedAt: new Date(),
     });
+
+    const updatedDoc = await this.collection.doc(id).get();
+    if (!updatedDoc.exists) return null;
+
+    return { id: updatedDoc.id, ...updatedDoc.data() } as Task;
   }
 
-  async delete(id: string): Promise<void> {
-    await this.collection.doc(id).delete();
+  async delete(id: string): Promise<Task | null> {
+    const docRef = this.collection.doc(id);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    const task = { id: doc.id, ...doc.data() } as Task;
+
+    await docRef.delete();
+
+    return task;
   }
 }

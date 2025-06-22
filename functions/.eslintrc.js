@@ -23,6 +23,12 @@ module.exports = {
   rules: {
     "prettier/prettier": "error",
     capIsNew: 0,
+    "new-cap": [
+      "error",
+      {
+        capIsNewExceptions: ["Router"],
+      },
+    ],
     quotes: ["error", "double"],
     "import/no-unresolved": 0,
     indent: ["error", 2],
