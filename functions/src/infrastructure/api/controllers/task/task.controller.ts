@@ -17,19 +17,22 @@ export class TaskController {
   ) {}
 
   private taskToDto(task: Task): TaskResponseDto {
+    function safeToISOString(date: Date | undefined): string | undefined {
+      if (!date) return undefined;
+      if (date instanceof Date) {
+        return isNaN(date.getTime()) ? undefined : date.toISOString();
+      }
+      const parsedDate = new Date(date);
+      return isNaN(parsedDate.getTime()) ? undefined : parsedDate.toISOString();
+    }
+
     return {
       id: task.id ?? "",
       title: task.title,
       description: task.description,
       completed: task.completed,
-      createdAt:
-        task.createdAt && typeof task.createdAt.toISOString === "function"
-          ? task.createdAt.toISOString()
-          : new Date(task.createdAt).toISOString(),
-      updatedAt:
-        task.updatedAt && typeof task.updatedAt.toISOString === "function"
-          ? task.updatedAt.toISOString()
-          : undefined,
+      createdAt: safeToISOString(task.createdAt) ?? "",
+      updatedAt: safeToISOString(task.updatedAt),
     };
   }
 
