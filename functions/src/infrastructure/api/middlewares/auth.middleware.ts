@@ -21,7 +21,6 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const newUser = new NewUser();
     const validateToken = newUser.verifyAndDecoreUserAccessToken(token);
     const user = await authRepository.findById(validateToken.id);
-
     if (!user) {
       _res.status(401).json({
         success: false,
@@ -30,7 +29,7 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
       return;
     }
 
-    (req as Request).userId = user.id;
+    req.userId = user;
 
     next();
     return;

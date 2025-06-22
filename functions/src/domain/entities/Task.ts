@@ -5,4 +5,5 @@ export interface Task {
   completed: boolean;
   createdAt: Date;
   updatedAt?: Date;
+  userId?: string;
 }

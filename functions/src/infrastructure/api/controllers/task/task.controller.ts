@@ -44,7 +44,15 @@ export class TaskController {
    */
   async getTasks(req: Request, res: Response): Promise<void> {
     try {
-      const tasks = await this.getTasksUseCase.execute();
+      const userId = req.userId;
+      if (!userId) {
+        res.status(401).json({
+          success: false,
+          message: "Unauthorized",
+        });
+        return;
+      }
+      const tasks = await this.getTasksUseCase.execute(userId);
       const taskDtos = tasks.map((task) => this.taskToDto(task));
 
       const response: IApiResponse<TaskResponseDto[]> = {
@@ -76,6 +84,11 @@ export class TaskController {
    */
   async createTask(req: Request, res: Response): Promise<void> {
     try {
+      const userId = req.userId;
+      if (!userId) {
+        res.status(401).json({ success: false, message: "Unauthorized" });
+        return;
+      }
       const validationResult = createTaskCodec.decodeCreateTask(req.body);
 
       if (!validationResult.success) {
@@ -95,6 +108,7 @@ export class TaskController {
         title: createTaskDto.title,
         description: createTaskDto.description,
         completed: false,
+        userId,
       });
 
       const response: IApiResponse<TaskResponseDto> = {

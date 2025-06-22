@@ -6,6 +6,7 @@ interface CreateTaskInput {
   title: string;
   description: string;
   completed?: boolean;
+  userId: string;
 }
 
 class CreateTaskUseCase {
@@ -23,6 +24,7 @@ class CreateTaskUseCase {
       completed: input.completed ?? false,
       createdAt: new Date(),
       updatedAt: new Date(),
+      userId: input.userId,
     };
 
     return await this.taskRepository.create(task);

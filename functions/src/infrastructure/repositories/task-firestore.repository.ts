@@ -5,8 +5,8 @@ import { TaskRepository } from "../../domain/repositories/task.repository";
 export class TaskFirestoreRepository implements TaskRepository {
   private collection = db.collection("tasks");
 
-  async getAll(): Promise<Task[]> {
-    const snapshot = await this.collection.get();
+  async getAll(userId: string): Promise<Task[]> {
+    const snapshot = await this.collection.where("userId", "==", userId).get();
 
     const tasks: Task[] = snapshot.docs.map((doc) => {
       const data = doc.data();

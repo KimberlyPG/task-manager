@@ -8,10 +8,10 @@ class GetTasksUseCase {
     private logger: Logger
   ) {}
 
-  async execute(): Promise<Task[]> {
+  async execute(userId: string): Promise<Task[]> {
     this.logger.info("GetTasksUseCase.execute");
 
-    return this.taskRepository.getAll();
+    return this.taskRepository.getAll(userId);
   }
 }
 

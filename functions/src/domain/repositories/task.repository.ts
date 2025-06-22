@@ -1,7 +1,7 @@
 import { Task } from "../entities/Task";
 
 export interface TaskRepository {
-  getAll(): Promise<Task[]>;
+  getAll(userId: string): Promise<Task[]>;
   getById(id: string): Promise<Task | null>;
   create(task: Task): Promise<Task>;
   update(id: string, task: Partial<Task>): Promise<Task | null>;
