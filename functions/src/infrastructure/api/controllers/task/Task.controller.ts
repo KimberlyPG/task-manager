@@ -1,5 +1,5 @@
-import {Request, Response} from "express";
-import {Task} from "../../../../domain/entities/Task";
+import { Request, Response } from "express";
+import { Task } from "../../../../domain/entities/Task";
 import {
   CreateTaskDto,
   UpdateTaskDto,
@@ -9,13 +9,15 @@ import {
   UpdateTaskSchema,
   TaskIdSchema,
 } from "./task.dto";
-import {createTaskCodec, getTaskCodec} from "./task.codec";
+import { createTaskCodec, getTaskCodec } from "./task.codec";
+import { CreateTaskUseCase, GetTasksUseCase } from "../../../../core/use-cases";
+import { TaskFirestoreRepository } from "../../../repositories/task-firestore.repository";
 
 export class TaskController {
-  private tasks: Task[] = [];
-  private nextId = 1;
-
-  constructor() {
+  constructor(
+    private readonly createTaskUseCase = new CreateTaskUseCase(new TaskFirestoreRepository()),
+    private readonly getTasksUseCase = new GetTasksUseCase(new TaskFirestoreRepository())
+  ) {
     console.log("TaskController constructor");
   }
 
@@ -36,7 +38,8 @@ export class TaskController {
    */
   async getTasks(req: Request, res: Response): Promise<void> {
     try {
-      const taskDtos = this.tasks.map((task) => this.taskToDto(task));
+      const tasks = await this.getTasksUseCase.execute();
+      const taskDtos = tasks.map((task) => this.taskToDto(task));
 
       const response: ApiResponseDto<TaskResponseDto[]> = {
         success: true,
@@ -64,8 +67,7 @@ export class TaskController {
         const errorResponse: ErrorResponseDto = {
           success: false,
           message: "Invalid input data",
-          error: validationResult.error.errors.map((err) => err.message)
-            .join(", "),
+          error: validationResult.error.errors.map((err) => err.message).join(", "),
         };
 
         res.status(400).json(errorResponse);
@@ -74,19 +76,15 @@ export class TaskController {
 
       const createTaskDto: CreateTaskDto = validationResult.data;
 
-      const newTask: Task = {
-        id: this.nextId++,
+      const createdTask = await this.createTaskUseCase.execute({
         title: createTaskDto.title,
         description: createTaskDto.description,
         completed: false,
-        createdAt: new Date(),
-      };
-
-      this.tasks.push(newTask);
+      });
 
       const response: ApiResponseDto<TaskResponseDto> = {
         success: true,
-        data: this.taskToDto(newTask),
+        data: this.taskToDto(createdTask),
         message: "Task created successfully",
       };
 
@@ -104,7 +102,7 @@ export class TaskController {
 
   async updateTask(req: Request, res: Response): Promise<void> {
     try {
-      const {id} = req.params;
+      const { id } = req.params;
 
       const idValidationResult = TaskIdSchema.safeParse(id);
 
@@ -124,8 +122,7 @@ export class TaskController {
         const errorResponse: ErrorResponseDto = {
           success: false,
           message: "Invalid input data",
-          error: bodyValidationResult.error.errors.map((err) => err.message)
-            .join(", "),
+          error: bodyValidationResult.error.errors.map((err) => err.message).join(", "),
         };
 
         res.status(400).json(errorResponse);
@@ -134,8 +131,7 @@ export class TaskController {
 
       const updateTaskDto: UpdateTaskDto = bodyValidationResult.data;
 
-      const taskIndex = this.tasks
-        .findIndex((task) => task.id === parseInt(id));
+      const taskIndex = this.tasks.findIndex((task) => task.id === parseInt(id));
 
       if (taskIndex === -1) {
         const errorResponse: ErrorResponseDto = {
@@ -151,15 +147,13 @@ export class TaskController {
 
       const updatedTask: Task = {
         ...existingTask,
-        title: updateTaskDto.title !== undefined ?
-          updateTaskDto.title : existingTask.title,
+        title: updateTaskDto.title !== undefined ? updateTaskDto.title : existingTask.title,
         description:
-          updateTaskDto.description !== undefined ?
-            updateTaskDto.description :
-            existingTask.description,
+          updateTaskDto.description !== undefined
+            ? updateTaskDto.description
+            : existingTask.description,
         completed:
-          updateTaskDto.completed !== undefined ?
-            updateTaskDto.completed : existingTask.completed,
+          updateTaskDto.completed !== undefined ? updateTaskDto.completed : existingTask.completed,
         updatedAt: new Date(),
       };
 
@@ -185,7 +179,7 @@ export class TaskController {
 
   async deleteTask(req: Request, res: Response): Promise<void> {
     try {
-      const {id} = req.params;
+      const { id } = req.params;
 
       const taskIdValidation = getTaskCodec.decodeTaskId(id);
 
@@ -199,8 +193,7 @@ export class TaskController {
         return;
       }
 
-      const taskIndex = this.tasks
-        .findIndex((task) => task.id === parseInt(id));
+      const taskIndex = this.tasks.findIndex((task) => task.id === parseInt(id));
 
       if (taskIndex === -1) {
         const errorResponse: ErrorResponseDto = {

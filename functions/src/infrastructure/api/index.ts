@@ -6,7 +6,7 @@ import taskRoutes from "../../interfaces/routes/tasks.routes";
 
 const app = express();
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // Health check endpoint
