@@ -1,5 +1,6 @@
 import { Task } from "../../../domain/entities/Task";
 import { TaskRepository } from "../../../domain/repositories/TaskRepository";
+import { Logger } from "../../ports/logger.port";
 
 interface CreateTaskInput {
   title: string;
@@ -8,9 +9,14 @@ interface CreateTaskInput {
 }
 
 class CreateTaskUseCase {
-  constructor(private taskRepository: TaskRepository) {}
+  constructor(
+    private taskRepository: TaskRepository,
+    private logger: Logger
+  ) {}
 
   async execute(input: CreateTaskInput): Promise<Task> {
+    this.logger.info("CreateTaskUseCase.execute");
+
     const task: Task = {
       title: input.title,
       description: input.description,

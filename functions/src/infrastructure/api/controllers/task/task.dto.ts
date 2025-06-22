@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 // DTOs for Task API
-// Zod schema for task response
 export const TaskResponseSchema = z.object({
   id: z.string(),
   title: z.string(),

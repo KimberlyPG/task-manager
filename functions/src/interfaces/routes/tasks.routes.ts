@@ -1,30 +1,9 @@
 import { Router } from "express";
-import { TaskController } from "../../infrastructure/api/controllers/task/a.controller";
-import { TaskFirestoreRepository } from "../../infrastructure/repositories/task-firestore.repository";
-import {
-  CreateTaskUseCase,
-  GetTasksUseCase,
-  UpdateTaskUseCase,
-  DeleteTaskUseCase,
-  GetTaskByIdUseCase,
-} from "../../core/use-cases";
+import container from "../../infrastructure/adapters/adapters.di";
 
 const router = Router();
 
-const taskRepo = new TaskFirestoreRepository();
-const createTaskUseCase = new CreateTaskUseCase(taskRepo);
-const getTasksUseCase = new GetTasksUseCase(taskRepo);
-const updateTaskUseCase = new UpdateTaskUseCase(taskRepo);
-const deleteTaskUseCase = new DeleteTaskUseCase(taskRepo);
-const getTaskByIdUseCase = new GetTaskByIdUseCase(taskRepo);
-
-const taskController = new TaskController(
-  createTaskUseCase,
-  getTasksUseCase,
-  updateTaskUseCase,
-  deleteTaskUseCase,
-  getTaskByIdUseCase
-);
+const taskController = container.resolve("taskController");
 
 router.get("/", (req, res) => taskController.getTasks(req, res));
 router.post("/", (req, res) => taskController.createTask(req, res));

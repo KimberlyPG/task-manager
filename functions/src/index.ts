@@ -1,4 +1,6 @@
 import "dotenv/config";
+// Inject dependencies
+import "./infrastructure/adapters/adapters.di";
 
 import app from "./infrastructure/api";
 

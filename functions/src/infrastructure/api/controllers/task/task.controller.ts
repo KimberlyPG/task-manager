@@ -7,7 +7,6 @@ import {
   ApiResponseDto,
   ErrorResponseDto,
   UpdateTaskSchema,
-  TaskIdSchema,
 } from "./task.dto";
 import { createTaskCodec, getTaskCodec } from "./task.codec";
 import { CreateTaskUseCase, GetTasksUseCase, UpdateTaskUseCase } from "../../../../core/use-cases";
@@ -37,11 +36,10 @@ export class TaskController {
 
   /**
    * Get tasks list
-   * @param {Request} req - Express request object
    * @param {Response} res - Express response object
    * @return {Promise<void>}
    */
-  async getTasks(req: Request, res: Response): Promise<void> {
+  async getTasks(res: Response): Promise<void> {
     try {
       const tasks = await this.getTasksUseCase.execute();
       const taskDtos = tasks.map((task) => this.taskToDto(task));
@@ -64,6 +62,15 @@ export class TaskController {
     }
   }
 
+  /**
+   * Create a new task
+   *
+   * @param {Request} req - Request object with body containing:
+   *   - title: string (required)
+   *   - description: string (required)
+   * @param {Response} res - Response object
+   * @return {Promise<void>}
+   */
   async createTask(req: Request, res: Response): Promise<void> {
     try {
       const validationResult = createTaskCodec.decodeCreateTask(req.body);
@@ -102,6 +109,42 @@ export class TaskController {
       };
 
       res.status(500).json(errorResponse);
+    }
+  }
+
+  async getTaskById(req: Request, res: Response): Promise<void> {
+    const { id } = req.params;
+
+    const taskIdValidation = getTaskCodec.decodeTaskId(id);
+    if (!taskIdValidation.success) {
+      res.status(400).json({
+        success: false,
+        message: "Invalid task ID",
+      });
+      throw taskIdValidation.error.toString();
+    }
+
+    try {
+      const task = await this.getTaskByIdUseCase.execute(id);
+
+      if (!task) {
+        res.status(404).json({
+          success: false,
+          message: "Task not found",
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        data: this.taskToDto(task),
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error fetching task",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
     }
   }
 
@@ -161,13 +204,13 @@ export class TaskController {
   async deleteTask(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
 
-    const idValidation = TaskIdSchema.safeParse(id);
-    if (!idValidation.success) {
+    const taskIdValidation = getTaskCodec.decodeTaskId(id);
+    if (!taskIdValidation.success) {
       res.status(400).json({
         success: false,
         message: "Task ID is required and must be a valid string",
       });
-      return;
+      throw taskIdValidation.error.toString();
     }
 
     try {
@@ -194,42 +237,6 @@ export class TaskController {
         error: error instanceof Error ? error.message : "Unknown error",
       });
       return;
-    }
-  }
-
-  async getTaskById(req: Request, res: Response): Promise<void> {
-    const { id } = req.params;
-
-    const validation = TaskIdSchema.safeParse(id);
-    if (!validation.success) {
-      res.status(400).json({
-        success: false,
-        message: "Invalid task ID",
-      });
-      return;
-    }
-
-    try {
-      const task = await this.getTaskByIdUseCase.execute(id);
-
-      if (!task) {
-        res.status(404).json({
-          success: false,
-          message: "Task not found",
-        });
-        return;
-      }
-
-      res.status(200).json({
-        success: true,
-        data: this.taskToDto(task),
-      });
-    } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: "Error fetching task",
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
     }
   }
 }
