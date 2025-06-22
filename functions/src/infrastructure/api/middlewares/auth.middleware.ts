@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { NewUser } from "../../../core/entities/user.entity";
 import container from "../../adapters/adapters.di";
-import { UnauthorizedError } from "../../../core/errors/handle-error";
 
 const authRepository = container.resolve("authRepository");
 
@@ -9,7 +8,11 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    throw new UnauthorizedError("Missing or invalid token");
+    _res.status(401).json({
+      success: false,
+      message: "Missing or invalid token",
+    });
+    return;
   }
 
   const token = authHeader.split(" ")[1];
@@ -17,14 +20,14 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
   try {
     const newUser = new NewUser();
     const validateToken = newUser.verifyAndDecoreUserAccessToken(token);
-
-    const user = await authRepository.getByEmail(validateToken.id);
+    const user = await authRepository.findById(validateToken.id);
 
     if (!user) {
       _res.status(401).json({
         success: false,
         message: "Token does not contain subject",
       });
+      return;
     }
 
     (req as Request).userId = user.id;

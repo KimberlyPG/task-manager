@@ -6,4 +6,5 @@ export type CreateUserInput = {
 export interface AuthRepository {
   create(user: CreateUserInput): Promise<ExistingUser | "existing">;
   getByEmail(email: string): Promise<ExistingUser | null>;
+  findById(id: string): Promise<string | null>;
 }

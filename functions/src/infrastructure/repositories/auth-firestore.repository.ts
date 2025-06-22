@@ -4,6 +4,15 @@ import { ExistingUser } from "../../core/entities/user.entity";
 
 export class AuthFirestoreRepository implements AuthRepository {
   private collection = db.collection("users");
+  async findById(id: string): Promise<string | null> {
+    const doc = await this.collection.doc(id).get();
+
+    if (!doc.exists) {
+      return null;
+    }
+
+    return id;
+  }
 
   async getByEmail(email: string): Promise<ExistingUser | null> {
     const snapshot = await this.collection.where("email", "==", email).limit(1).get();
