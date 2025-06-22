@@ -3,8 +3,8 @@ import { Logger } from "../../ports/logger.port";
 
 class LoginUserUseCase {
   constructor(
-    private logger: Logger,
-    private userRepository: AuthRepository
+    private userRepository: AuthRepository,
+    private logger: Logger
   ) {}
 
   async execute(email: string): Promise<{ token: string } | "no_existing"> {

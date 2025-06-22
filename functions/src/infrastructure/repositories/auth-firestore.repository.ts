@@ -2,7 +2,7 @@ import { db } from "../adapters/firebase/firebase.admin";
 import { AuthRepository } from "../../domain/repositories/auth.repository";
 import { ExistingUser } from "../../core/entities/user.entity";
 
-export class UserFirestoreRepository implements AuthRepository {
+export class AuthFirestoreRepository implements AuthRepository {
   private collection = db.collection("users");
 
   async getByEmail(email: string): Promise<ExistingUser | null> {

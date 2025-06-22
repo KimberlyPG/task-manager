@@ -7,8 +7,8 @@ type RegisterUserInput = {
 
 class RegisterUserUseCase {
   constructor(
-    private logger: Logger,
-    private userRepository: AuthRepository
+    private userRepository: AuthRepository,
+    private logger: Logger
   ) {}
 
   async execute({ email }: RegisterUserInput): Promise<{ token: string } | "existing"> {

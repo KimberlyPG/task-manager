@@ -2,7 +2,7 @@ import bodyParser from "body-parser";
 import express from "express";
 
 import config from "./api.config";
-import taskRoutes from "../../interfaces/routes/tasks.routes";
+import { authRoutes, taskRoutes } from "../../interfaces/routes";
 
 const app = express();
 
@@ -20,6 +20,7 @@ app.get("/health", (req, res) => {
 
 // API routes
 app.use("/tasks", taskRoutes);
+app.use("/auth", authRoutes);
 
 const server = app.listen(config.port || 3000, () => {
   console.log(`Listening at http://localhost:${config.port}`);
