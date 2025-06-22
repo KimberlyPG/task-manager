@@ -1,17 +1,11 @@
 import { Request, Response } from "express";
 import { Task } from "../../../../domain/entities/Task";
-import {
-  CreateTaskDto,
-  UpdateTaskDto,
-  TaskResponseDto,
-  ApiResponseDto,
-  ErrorResponseDto,
-  UpdateTaskSchema,
-} from "./task.dto";
+import { CreateTaskDto, UpdateTaskDto, TaskResponseDto, UpdateTaskSchema } from "./task.dto";
 import { createTaskCodec, getTaskCodec } from "./task.codec";
 import { CreateTaskUseCase, GetTasksUseCase, UpdateTaskUseCase } from "../../../../core/use-cases";
 import DeleteTaskUseCase from "../../../../core/use-cases/tasks/delete-task-use-case";
 import { GetTaskByIdUseCase } from "../../../../core/use-cases/tasks/get-task-by-id-use-case";
+import { IApiResponse, IErrorResponse } from "../../../../interfaces/api-response.interface";
 
 export class TaskController {
   constructor(
@@ -20,9 +14,7 @@ export class TaskController {
     private readonly updateTaskUseCase: UpdateTaskUseCase,
     private readonly deleteTaskUseCase: DeleteTaskUseCase,
     private readonly getTaskByIdUseCase: GetTaskByIdUseCase
-  ) {
-    console.log("TaskController constructor");
-  }
+  ) {}
 
   private taskToDto(task: Task): TaskResponseDto {
     return {
@@ -30,21 +22,29 @@ export class TaskController {
       title: task.title,
       description: task.description,
       completed: task.completed,
-      createdAt: task.createdAt?.toISOString(),
+      createdAt:
+        task.createdAt && typeof task.createdAt.toISOString === "function"
+          ? task.createdAt.toISOString()
+          : new Date(task.createdAt).toISOString(),
+      updatedAt:
+        task.updatedAt && typeof task.updatedAt.toISOString === "function"
+          ? task.updatedAt.toISOString()
+          : undefined,
     };
   }
 
   /**
    * Get tasks list
+   * @param {Request} req - Express request object
    * @param {Response} res - Express response object
    * @return {Promise<void>}
    */
-  async getTasks(res: Response): Promise<void> {
+  async getTasks(req: Request, res: Response): Promise<void> {
     try {
       const tasks = await this.getTasksUseCase.execute();
       const taskDtos = tasks.map((task) => this.taskToDto(task));
 
-      const response: ApiResponseDto<TaskResponseDto[]> = {
+      const response: IApiResponse<TaskResponseDto[]> = {
         success: true,
         data: taskDtos,
         count: taskDtos.length,
@@ -52,7 +52,7 @@ export class TaskController {
 
       res.status(200).json(response);
     } catch (error) {
-      const errorResponse: ErrorResponseDto = {
+      const errorResponse: IErrorResponse = {
         success: false,
         message: "Error fetching tasks",
         error: error instanceof Error ? error.message : "Unknown error",
@@ -76,7 +76,7 @@ export class TaskController {
       const validationResult = createTaskCodec.decodeCreateTask(req.body);
 
       if (!validationResult.success) {
-        const errorResponse: ErrorResponseDto = {
+        const errorResponse: IErrorResponse = {
           success: false,
           message: "Invalid input data",
           error: validationResult.error.errors.map((err) => err.message).join(", "),
@@ -94,7 +94,7 @@ export class TaskController {
         completed: false,
       });
 
-      const response: ApiResponseDto<TaskResponseDto> = {
+      const response: IApiResponse<TaskResponseDto> = {
         success: true,
         data: this.taskToDto(createdTask),
         message: "Task created successfully",
@@ -102,7 +102,7 @@ export class TaskController {
 
       res.status(201).json(response);
     } catch (error) {
-      const errorResponse: ErrorResponseDto = {
+      const errorResponse: IErrorResponse = {
         success: false,
         message: "Error creating task",
         error: error instanceof Error ? error.message : "Unknown error",
@@ -183,7 +183,7 @@ export class TaskController {
         return;
       }
 
-      const response: ApiResponseDto<TaskResponseDto> = {
+      const response: IApiResponse<TaskResponseDto> = {
         success: true,
         data: this.taskToDto(updatedTask),
         message: "Task updated successfully",

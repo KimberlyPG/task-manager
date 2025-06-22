@@ -1,9 +1,32 @@
 import { Router } from "express";
-import container from "../../infrastructure/adapters/adapters.di";
+import { TaskController } from "../../infrastructure/api/controllers/task/task.controller";
+import { TaskFirestoreRepository } from "../../infrastructure/repositories/task-firestore.repository";
+import {
+  CreateTaskUseCase,
+  GetTasksUseCase,
+  UpdateTaskUseCase,
+  DeleteTaskUseCase,
+  GetTaskByIdUseCase,
+} from "../../core/use-cases";
+import { WinstonLogger } from "../../infrastructure/adapters/winston-logger/winston-logger.adapter";
+const logger = new WinstonLogger();
 
 const router = Router();
 
-const taskController = container.resolve("taskController");
+const taskRepo = new TaskFirestoreRepository();
+const createTaskUseCase = new CreateTaskUseCase(taskRepo, logger);
+const getTasksUseCase = new GetTasksUseCase(taskRepo, logger);
+const updateTaskUseCase = new UpdateTaskUseCase(taskRepo, logger);
+const deleteTaskUseCase = new DeleteTaskUseCase(taskRepo, logger);
+const getTaskByIdUseCase = new GetTaskByIdUseCase(taskRepo, logger);
+
+const taskController = new TaskController(
+  createTaskUseCase,
+  getTasksUseCase,
+  updateTaskUseCase,
+  deleteTaskUseCase,
+  getTaskByIdUseCase
+);
 
 router.get("/", (req, res) => taskController.getTasks(req, res));
 router.post("/", (req, res) => taskController.createTask(req, res));

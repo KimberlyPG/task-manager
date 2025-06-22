@@ -7,23 +7,10 @@ export const TaskResponseSchema = z.object({
   description: z.string(),
   completed: z.boolean(),
   createdAt: z.string(),
+  updatedAt: z.string().optional(),
 });
 
 export type TaskResponseDto = z.infer<typeof TaskResponseSchema>;
-
-export interface ApiResponseDto<T> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-  count?: number;
-}
-
-export interface ErrorResponseDto {
-  success: false;
-  message: string;
-  error?: string;
-}
 
 export const getTasksSchema = z.array(TaskResponseSchema);
 

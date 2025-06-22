@@ -18,6 +18,9 @@ export class TaskFirestoreRepository implements TaskRepository {
         createdAt: data.createdAt?.toDate
           ? new Date(data.createdAt.toDate())
           : new Date(data.createdAt),
+        updatedAt: data.updatedAt?.toDate
+          ? new Date(data.updatedAt.toDate())
+          : new Date(data.updatedAt),
       };
     });
 
@@ -62,10 +65,19 @@ export class TaskFirestoreRepository implements TaskRepository {
       return null;
     }
 
-    const task = { id: doc.id, ...doc.data() } as Task;
-
     await docRef.delete();
 
-    return task;
+    const data = doc.data();
+
+    if (!data) return null;
+
+    return {
+      id: doc.id,
+      title: data.title,
+      description: data.description,
+      completed: data.completed,
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt ? data.updatedAt.toDate() : undefined,
+    };
   }
 }

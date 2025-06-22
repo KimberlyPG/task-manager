@@ -1,4 +1,4 @@
-import { createContainer, asClass } from "awilix";
+import { createContainer, asClass, InjectionMode } from "awilix";
 
 import { TaskController } from "../api/controllers/task/task.controller";
 import { TaskFirestoreRepository } from "../repositories/task-firestore.repository";
@@ -11,7 +11,9 @@ import {
 } from "../../core/use-cases";
 import { WinstonLogger } from "./winston-logger/winston-logger.adapter";
 
-const container = createContainer();
+const container = createContainer({
+  injectionMode: InjectionMode.PROXY,
+});
 
 container.register({
   taskRepository: asClass(TaskFirestoreRepository).singleton(),
