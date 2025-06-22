@@ -1,5 +1,5 @@
 import { Task } from "../../../domain/entities/Task";
-import { TaskRepository } from "../../../domain/repositories/TaskRepository";
+import { TaskRepository } from "../../../domain/repositories/task.repository";
 import { Logger } from "../../ports/logger.port";
 
 export class GetTaskByIdUseCase {

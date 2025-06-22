@@ -1,4 +1,4 @@
-import { UserRepository } from "../../../domain/repositories/TaskRepository";
+import { AuthRepository } from "../../../domain/repositories/auth.repository";
 import { Logger } from "../../ports/logger.port";
 
 type RegisterUserInput = {
@@ -8,7 +8,7 @@ type RegisterUserInput = {
 class RegisterUserUseCase {
   constructor(
     private logger: Logger,
-    private userRepository: UserRepository
+    private userRepository: AuthRepository
   ) {}
 
   async execute({ email }: RegisterUserInput): Promise<{ token: string } | "existing"> {

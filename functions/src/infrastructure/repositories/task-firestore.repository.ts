@@ -1,6 +1,6 @@
 import { db } from "../adapters/firebase/firebase.admin";
 import { Task } from "../../domain/entities/Task";
-import { TaskRepository } from "../../domain/repositories/TaskRepository";
+import { TaskRepository } from "../../domain/repositories/task.repository";
 
 export class TaskFirestoreRepository implements TaskRepository {
   private collection = db.collection("tasks");
