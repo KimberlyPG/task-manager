@@ -1,8 +1,8 @@
 import bodyParser from "body-parser";
 import express from "express";
 
-import config from "./api.config";
 import { authRoutes, taskRoutes } from "../../interfaces/routes";
+// import { errorHandlerMiddleware } from "./middlewares/handle-error.middleware";
 
 const app = express();
 
@@ -21,10 +21,5 @@ app.get("/health", (req, res) => {
 // API routes
 app.use("/tasks", taskRoutes);
 app.use("/auth", authRoutes);
-
-const server = app.listen(config.port || 3000, () => {
-  console.log(`Listening at http://localhost:${config.port}`);
-});
-server.on("error", console.error);
 
 export default app;

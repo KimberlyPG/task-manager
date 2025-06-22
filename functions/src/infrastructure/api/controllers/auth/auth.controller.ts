@@ -56,7 +56,7 @@ export class AuthController {
     } catch (error) {
       const errorResponse: IErrorResponse = {
         success: false,
-        message: "Error creating task",
+        message: "Error creating user",
         error: error instanceof Error ? error.message : "Unknown error",
       };
 

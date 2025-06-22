@@ -11,5 +11,5 @@ import { onRequest } from "firebase-functions/v2/https";
 
 setGlobalOptions({ maxInstances: 10 });
 
-// Inicializar Firebase Admin
+// Initialize the app
 export const api = onRequest(app);

@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { env } from "process";
-import { sign, verify } from "jsonwebtoken";
+import { sign, verify, JwtPayload } from "jsonwebtoken";
 
 const ConfigShema = z.object({
   secret: z.string().min(1, "Secret is required and cannot be empty").trim(),
@@ -14,7 +14,6 @@ abstract class User {
   constructor() {
     this.config = ConfigShema.parse({
       secret: env["JWT_SECRET"],
-      salt: env["USER_SALT"],
     });
   }
 }
@@ -44,10 +43,16 @@ export class NewUser extends User {
   }
 
   public verifyAndDecoreUserAccessToken(token: string): { id: string } {
-    const { sub } = verify(token, this.config.secret);
-    if (sub && typeof sub === "string") {
-      return { id: sub };
+    try {
+      const payload = verify(token, this.config.secret) as JwtPayload; // casteamos
+      const sub = payload.sub;
+      if (sub && typeof sub === "string") {
+        return { id: sub };
+      }
+      throw new Error("Expected a sub claim");
+    } catch (error) {
+      console.error("JWT verification failed:", error);
+      throw error;
     }
-    throw new Error("Expected a sub claim");
   }
 }

@@ -13,7 +13,7 @@ const registerUserUseCase = new RegisterUserUseCase(authRepo, logger);
 
 const authController = new AuthController(loginUserUseCase, registerUserUseCase);
 
-router.post("/sessions", (req, res) => authController.signin(req, res));
-router.post("/users", (req, res) => authController.register(req, res));
+router.post("/sessions", (req, res) => authController.register(req, res));
+router.post("/users", (req, res) => authController.signin(req, res));
 
 export default router;

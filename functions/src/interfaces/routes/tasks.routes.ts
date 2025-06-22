@@ -9,6 +9,7 @@ import {
   GetTaskByIdUseCase,
 } from "../../core/use-cases";
 import { WinstonLogger } from "../../infrastructure/adapters/winston-logger/winston-logger.adapter";
+import { authMiddleware } from "../../infrastructure/api/middlewares/auth.middleware";
 const logger = new WinstonLogger();
 
 const router = Router();
@@ -27,6 +28,8 @@ const taskController = new TaskController(
   deleteTaskUseCase,
   getTaskByIdUseCase
 );
+
+router.use(authMiddleware);
 
 router.get("/", (req, res) => taskController.getTasks(req, res));
 router.post("/", (req, res) => taskController.createTask(req, res));

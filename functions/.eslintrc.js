@@ -35,5 +35,6 @@ module.exports = {
     "require-jsdoc": "off",
     "object-curly-spacing": ["error", "always"],
     "linebreak-style": 0,
+    "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
   },
 };
