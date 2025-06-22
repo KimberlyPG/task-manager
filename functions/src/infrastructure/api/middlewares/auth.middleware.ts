@@ -18,7 +18,7 @@ export const authMiddleware = async (req: Request, _res: Response, next: NextFun
     const newUser = new NewUser();
     const validateToken = newUser.verifyAndDecoreUserAccessToken(token);
 
-    const user = await authRepository.findById(validateToken.id);
+    const user = await authRepository.getByEmail(validateToken.id);
 
     if (!user) {
       _res.status(401).json({
