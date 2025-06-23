@@ -24,7 +24,7 @@ This backend provides RESTful APIs to manage tasks with full CRUD functionality.
 - Node.js v22
 - Firebase CLI
 - Firebase project configured
-- 
+  
 ⚙️ Getting Started
 Clone the project and install dependencies `npm i`
 
