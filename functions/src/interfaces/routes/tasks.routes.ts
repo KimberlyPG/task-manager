@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { TaskController } from "../../infrastructure/api/controllers/task/task.controller";
+import { TaskController } from "../../infrastructure/api/controllers/task/tasks.controller";
 import { TaskFirestoreRepository } from "../../infrastructure/repositories/task-firestore.repository";
 import {
   CreateTaskUseCase,
