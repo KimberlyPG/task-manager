@@ -25,9 +25,9 @@ This backend provides RESTful APIs to manage tasks with full CRUD functionality.
 - Firebase CLI
 - Firebase project configured
   
-⚙️ Getting Started
+## ⚙️ Getting Started
 Clone the project and install dependencies `npm i`
 
-▶️ Running the App
+## ▶️ Running the App
 Run local: firebase emulators:start 
 Deploy and use in cloud functions: npm run deploy
