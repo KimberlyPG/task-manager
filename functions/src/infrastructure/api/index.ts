@@ -3,11 +3,15 @@ import express from "express";
 import cors from "cors";
 
 import { authRoutes, taskRoutes } from "../../interfaces/routes";
-// import { errorHandlerMiddleware } from "./middlewares/handle-error.middleware";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:4200", "https://task-manager-fe-vq6x.vercel.app"],
+    credentials: true,
+  })
+);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
