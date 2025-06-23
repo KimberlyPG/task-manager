@@ -1,6 +1,6 @@
 import { createContainer, asClass, InjectionMode } from "awilix";
 
-import { TaskController } from "../api/controllers/task/t.controller";
+import { TaskController } from "../api/controllers/task/task.controller";
 import { TaskFirestoreRepository } from "../repositories/task-firestore.repository";
 import {
   CreateTaskUseCase,
