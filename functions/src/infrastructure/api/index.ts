@@ -1,10 +1,13 @@
 import bodyParser from "body-parser";
 import express from "express";
+import cors from "cors";
 
 import { authRoutes, taskRoutes } from "../../interfaces/routes";
 // import { errorHandlerMiddleware } from "./middlewares/handle-error.middleware";
 
 const app = express();
+
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
